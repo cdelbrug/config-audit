@@ -1,4 +1,13 @@
 from ciscoconfparse import CiscoConfParse
+from netmiko import ConnectHandler
+from getpass import getpass
+
+switch = {
+    'device_type': 'cisco_ios',
+    'host': 'nxos1.lasthop.io',
+    'username': 'pyclass',
+    'password': password,
+    }
 
 config = """
 
@@ -138,7 +147,9 @@ interface GigabitEthernet1
  switchport access vlan 89
 !
 interface GigabitEthernet2
- no ip address
+ description susilvm01
+ switchport mode trunk
+ switchport trunk allowed vlan 1001
 !
 interface GigabitEthernet3
  authentication priority dot1x mab
@@ -147,6 +158,11 @@ interface GigabitEthernet3
  switchport access vlan 89
 !
 interface GigabitEthernet4
+ description susilvm02
+ switchport mode trunk
+ switchport trunk allowed vlan 2001
+!
+interface GigabitEthernet5
  authentication priority dot1x mab
  authentication order mab dot1x
  authentication allow-everything
@@ -154,7 +170,7 @@ interface GigabitEthernet4
  switchport mode access
  switchport access vlan 89
 !
-interface GigabitEthernet5
+interface GigabitEthernet6
  authentication priority dot1x mab
  authentication order mab dot1x
  switchport mode access
@@ -204,7 +220,8 @@ p = CiscoConfParse(config)
 interfaces = p.find_objects(r'interface GigabitEthernet\S')
 #making empty lists where i'll put interface names based on qualifiers.
 user_ports = []
-non_user_ports = []
+auth_open_ports_list = []
+no_dot1x_ports = []
 
 #loop through interface objects
 for intf in interfaces:
@@ -217,15 +234,14 @@ for intf in interfaces:
 		print(f"Found user port [{intf.text}] without auth open, adding to a list")
 		# cool, found a user port, append the interface name to a list
 		user_ports.append(intf.text)
-	else:
-		print(f"Skipping port [{intf.text}], no dot1x or might have auth open")
-
-for intf in interfaces:
-	authentication_ports = intf.has_child_with(r'\sauthentication.+')
-	if not authentication_ports:
+	elif auth_open_ports:
+		print(f"Found auth_open port [{intf.text}], adding to a list")
+		auth_open_ports_list.append(intf.text)
+	elif not authentication_ports:
 		print(f"Found non-user port [{intf.text}] without authentication, adding to a list")
 		# found a non_user_port, add the name of the intf to a list
-		non_user_ports.append(intf.text)
+		no_dot1x_ports.append(intf.text)
 
 print(user_ports)
-print(non_user_ports)
+print(auth_open_ports_list)
+print(no_dot1x_ports)
