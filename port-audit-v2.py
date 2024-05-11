@@ -36,8 +36,8 @@ password = getpass()
 
 switch = {
     'device_type': 'cisco_ios',
-    'host': '10.249.9.10',
-    'username': 'caleb.delbrugge',
+    'host': '169.254.10.10',
+    'username': 'mrcalebd',
     'password': password,
     'secret': password,
     }
@@ -164,6 +164,6 @@ elif args.no_stp:
  for bad_trunk_port in trunks_no_bpdugard_portfast:
    print(bad_trunk_port)
 else:
-  print("Enter an argument, you idiot!")
+  print("Enter an argument, doh!")
 
 

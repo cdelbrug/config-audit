@@ -6,8 +6,8 @@ password = getpass()
 
 switch = {
     'device_type': 'cisco_ios',
-    'host': '10.249.9.10',
-    'username': 'caleb.delbrugge',
+    'host': '169.254.10.10',
+    'username': 'mrcalebd',
     'password': password,
     'secret': password,
     }
